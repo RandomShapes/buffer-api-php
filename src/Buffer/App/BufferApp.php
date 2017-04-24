@@ -22,22 +22,29 @@ namespace Buffer\App;
      * @var [type]
      */
     private $endpoints = [
-      '/user' => 'get',
+      '/user' => 'get', // Returns a single user.
+      '/user/deauthorize' => 'post', // Deauthorize your client for the user.
 
-      '/profiles' => 'get',
-      '/profiles/:id/schedules/update' => 'post', // Array schedules [0][days][]=mon, [0][times][]=12:00
-      '/profiles/:id/updates/reorder' => 'post',  // Array order, int offset, bool utc
-      '/profiles/:id/updates/pending' => 'get',
-      '/profiles/:id/updates/sent' => 'get',
-      '/profiles/:id/schedules' => 'get',
-      '/profiles/:id' => 'get',
+      '/profiles' => 'get', // Returns an array of social media profiles connected to a users account.
+      '/profiles/:id/schedules/update' => 'post', // Set the posting schedules for the specified social media profile.
+      '/profiles/:id/updates/reorder' => 'post',  // Edit the order at which statuses for the specified social media profile will be sent out of the buffer.
+      '/profiles/:id/updates/shuffle' => 'post',  // Randomize the order at which statuses for the specified social media profile will be sent out of the buffer.
+      '/profiles/:id/updates/pending' => 'get', // Returns an array of updates that are currently in the buffer for an individual social media profile.
+      '/profiles/:id/updates/sent' => 'get', // Returns an array of updates that have been sent from the buffer for an individual social media profile.
+      '/profiles/:id/schedules' => 'get', // Returns details of the posting schedules associated with a social media profile.
+      '/profiles/:id' => 'get', // Returns details of the single specified social media profile.
 
-      '/updates/:id/update' => 'post',   // String text, Bool now, Array media ['link'], ['description'], ['picture'], Bool utc
-      '/updates/create' => 'post',       // String text, Array profile_ids, Aool shorten, Bool now, Array media ['link'], ['description'], ['picture']
-      '/updates/:id/destroy' => 'post',
-      '/updates/:id' => 'get',
+      '/updates/:id/update' => 'post',   // Edit an existing, individual status update.
+      '/updates/create' => 'post',       // Create a new status update for one or more profiles.
+      '/updates/:id/destroy' => 'post', // Permanently delete an existing status update.
+      '/updates/:id/share' => 'post', // Immediately shares a single pending update and recalculates times for updates remaining in the queue.
+      '/updates/:id/move_to_top' => 'post', // Move an existing status update to the top of the queue and recalculate times for all updates in the queue. Returns the update with its new posting time.
+      '/updates/:id' => 'get', // Returns a single social media update.
 
-      '/links/shares' => 'get',
+      '/links/shares' => 'get', // Returns an object with a the numbers of shares a link has had using Buffer.
+
+      '/info/configuration' => 'get', // Returns an object with the current configuration that Buffer is using, including supported services, their icons and the varying limits of character and schedules.
+
     ];
 
     /**
