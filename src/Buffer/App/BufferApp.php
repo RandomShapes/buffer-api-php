@@ -17,7 +17,11 @@ namespace Buffer\App;
 
     public $ok = false;
 
-    private $endpoints = array(
+    /**
+     * All of the endpoints available in the API
+     * @var [type]
+     */
+    private $endpoints = [
       '/user' => 'get',
 
       '/profiles' => 'get',
@@ -34,9 +38,13 @@ namespace Buffer\App;
       '/updates/:id' => 'get',
 
       '/links/shares' => 'get',
-    );
+    ];
 
-    public $errors = array(
+    /**
+     * All of the possible error types
+     * @var array
+     */
+    public $errors = [
       'invalid-endpoint' => 'The endpoint you supplied does not appear to be valid.',
       '400' => 'Required parameter missing.',
       '403' => 'Permission denied.',
@@ -61,9 +69,13 @@ namespace Buffer\App;
       '1028' => 'Update soft limit for profile reached.',
       '1030' => 'Media filetype not supported.',
       '1031' => 'Media filesize out of acceptable range.',
-    );
+    ];
 
-    public $responses = array(
+    /**
+     * All of the possible response types
+     * @var array
+     */
+    public $responses = [
       '403' => 'Permission denied.',
       '404' => 'Endpoint not found.',
       '405' => 'Method not allowed.',
@@ -86,10 +98,16 @@ namespace Buffer\App;
       '403' => 'Update soft limit for profile reached.',
       '400' => 'Media filetype not supported.',
       '400' => 'Media filesize out of acceptable range.',
-    );
+    ];
 
-    public function __construct($client_id = '', $client_secret = '', $callback_url = '') {
-
+    /**
+     * Construct the BufferApp Instace
+     * @param string $client_id     Client ID
+     * @param string $client_secret Client Secret
+     * @param string $callback_url  Callback URL
+     */
+    public function __construct($client_id = '', $client_secret = '', $callback_url = '')
+    {
       if (isset($client_id)) {
         $this->set_client_id($client_id);
       }
@@ -114,7 +132,14 @@ namespace Buffer\App;
       $this->retrieve_access_token();
     }
 
-    public function go($endpoint = '', $data = '') {
+    /**
+     * Make sure the API call is available
+     * @param  string $endpoint Endpoint to target
+     * @param  string $data     The data to be passed
+     * @return [type]           TODO: Fill in
+     */
+    public function go($endpoint = '', $data = '')
+    {
       if (in_array($endpoint, array_keys($this->endpoints))) {
         $done_endpoint = $endpoint;
       } else {
@@ -130,18 +155,28 @@ namespace Buffer\App;
         if (!$ok) return $this->error('invalid-endpoint');
       }
 
-      if (!$data || !is_array($data)) $data = array();
+      if (!$data || !is_array($data)) $data = [];
       $data['access_token'] = $this->access_token;
 
       $method = $this->endpoints[$done_endpoint]; //get() or post()
       return $this->$method($this->buffer_url . $endpoint . '.json', $data);
     }
 
-    public function store_access_token() {
+    /**
+     * Save the access token
+     * @return void
+     */
+    public function store_access_token()
+    {
       $_SESSION['oauth']['buffer']['access_token'] = $this->access_token;
     }
 
-    public function retrieve_access_token() {
+    /**
+     * Retreive the access token
+     * @return void
+     */
+    public function retrieve_access_token()
+    {
       if (isset($_SESSION['oauth']['buffer']['access_token'])) {
                 $this->access_token = $_SESSION['oauth']['buffer']['access_token'];
       }
@@ -151,18 +186,29 @@ namespace Buffer\App;
       }
     }
 
-    public function error($error) {
-      return (object) array('error' => $this->errors[$error]);
+    /**
+     * Return an error object
+     * @param  error $error Error entry
+     * @return object       Error entry
+     */
+    public function error($error)
+    {
+      return (object) ['error' => $this->errors[$error]];
     }
 
-    public function create_access_token_url() {
-      $data = array(
+    /**
+     * Create the access token URL
+     * @return void
+     */
+    public function create_access_token_url()
+    {
+      $data = [
         'client_id' => $this->client_id,
         'client_secret' => $this->client_secret,
         'redirect_uri' => $this->callback_url,
         'code' => $this->code,
         'grant_type' => 'authorization_code',
-      );
+      ];
 
       $obj = $this->post($this->access_token_url, $data);
       $this->access_token = $obj->access_token;
@@ -170,17 +216,25 @@ namespace Buffer\App;
       $this->store_access_token();
     }
 
-    public function req($url = '', $data = '', $post = true) {
+    /**
+     * Create the request
+     * @param  string  $url  URL to make an API call to
+     * @param  string  $data Data to past
+     * @param  boolean $post Whether this is a POST request
+     * @return object        Response data
+     */
+    public function req($url = '', $data = '', $post = true)
+    {
       if (!$url) return false;
-      if (!$data || !is_array($data)) $data = array();
+      if (!$data || !is_array($data)) $data = [];
 
-      $options = array(CURLOPT_RETURNTRANSFER => true, CURLOPT_HEADER => false);
+      $options = [CURLOPT_RETURNTRANSFER => true, CURLOPT_HEADER => false];
 
       if ($post) {
-        $options += array(
+        $options += [
           CURLOPT_POST => $post,
           CURLOPT_POSTFIELDS => $data
-        );
+        ];
       } else {
         $url .= '?' . http_build_query($data);
       }
@@ -198,29 +252,62 @@ namespace Buffer\App;
       return json_decode($rs);
     }
 
-    public function get($url = '', $data = '') {
+    /**
+     * Make a GET request
+     * @param  string $url  Target URL
+     * @param  string $data Data
+     * @return request
+     */
+    public function get($url = '', $data = '')
+    {
       return $this->req($url, $data, false);
     }
 
-    public function post($url = '', $data = '') {
+    /**
+     * Make a POST request
+     * @param  string $url  Target URL
+     * @param  string $data Data
+     * @return request
+     */
+    public function post($url = '', $data = '')
+    {
       return $this->req($url, $data, true);
     }
 
-    public function get_login_url() {
+    /**
+     * Get the login URL
+     * @return string login URL
+     */
+    public function get_login_url()
+    {
       return $this->authorize_url . '?'
         . 'client_id=' . $this->client_id
         . '&redirect_uri=' . urlencode($this->callback_url)
         . '&response_type=code';
     }
 
-    public function set_client_id($client_id) {
+    /**
+     * Set the Client ID
+     * @param string $client_id Client ID
+     */
+    public function set_client_id($client_id)
+    {
       $this->client_id = $client_id;
     }
 
-    public function set_client_secret($client_secret) {
+    /**
+     * Set the Client Secret
+     * @param string $client_secret Client Secret
+     */
+    public function set_client_secret($client_secret)
+    {
       $this->client_secret = $client_secret;
     }
 
+    /**
+     * Set the callback URL
+     * @param string $callback_url Callback URL
+     */
     public function set_callback_url($callback_url) {
       $this->callback_url = $callback_url;
     }
