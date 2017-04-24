@@ -15,8 +15,6 @@ namespace Buffer\App;
     private $access_token_url = 'https://api.bufferapp.com/1/oauth2/token.json';
     private $buffer_url = 'https://api.bufferapp.com/1';
 
-    public $ok = false;
-
     /**
      * All of the endpoints available in the API
      * @var [type]
@@ -113,7 +111,7 @@ namespace Buffer\App;
      * @param string $client_secret Client Secret
      * @param string $callback_url  Callback URL
      */
-    public function __construct($client_id = '', $client_secret = '', $callback_url = '')
+    public function __construct($client_id = '', $client_secret = '', $callback_url = '', $access_token = null)
     {
       if (isset($client_id)) {
         $this->set_client_id($client_id);
@@ -136,7 +134,9 @@ namespace Buffer\App;
         $this->create_access_token_url();
       }
 
-      $this->retrieve_access_token();
+      if ($access_token) {
+        $this->set_access_token($access_token);
+      }
     }
 
     /**
@@ -170,30 +170,6 @@ namespace Buffer\App;
     }
 
     /**
-     * Save the access token
-     * @return void
-     */
-    public function store_access_token()
-    {
-      $_SESSION['oauth']['buffer']['access_token'] = $this->access_token;
-    }
-
-    /**
-     * Retreive the access token
-     * @return void
-     */
-    public function retrieve_access_token()
-    {
-      if (isset($_SESSION['oauth']['buffer']['access_token'])) {
-                $this->access_token = $_SESSION['oauth']['buffer']['access_token'];
-      }
-
-      if ($this->access_token) {
-        $this->ok = true;
-      }
-    }
-
-    /**
      * Return an error object
      * @param  error $error Error entry
      * @return object       Error entry
@@ -220,7 +196,7 @@ namespace Buffer\App;
       $obj = $this->post($this->access_token_url, $data);
       $this->access_token = $obj->access_token;
 
-      $this->store_access_token();
+      return $this->access_token;
     }
 
     /**
