@@ -10,8 +10,8 @@ For most use cases Buffer's plugins will work just fine, but for those of you lo
 
 # Using this library
 
-1. Include the file
-	- Make sure you've got: "require": "buffer/app": "dev-master" included in your composer.json file
+1. Add to composer
+	- Run `composer require randomshapes/buffer-api-php` or manually add it to your `composer.json` file
 2. Create a new Buffer app
 	- You'll need to [register an app](http://bufferapp.com/developers/api) with buffer before you can begin
 	- Initialize like this `$buffer = new BufferApp($client_id, $client_secret, $callback_url);` The `callback_url` needs to be the exact same as the app you registered
@@ -29,11 +29,6 @@ To get the desired result you will need to use `media[picture]` _and_ `media[thu
 
 
 # Example
-
-First thing's first: start a session.
-We're going to be storing the `access_token` in the session for now.
-
-		session_start();
 
 Set this thing up with your credentials and your callback URL. Remember: `callback_url` must match what you've got in Buffer exactly!
 
@@ -74,5 +69,4 @@ Realistically these methods should be replaced with some sort of abstraction -- 
 # License
 Apache-2.0
 Do whatever you like with this.
-Feel free (but not obligated) to [drop me a line](http://preilly.me) or the original author [drop kevin a line](http://kevin.fm) if it helps!
-
+Based on some code by [preilly.me](http://preilly.me) and [kevin.me](http://kevin.fm)
